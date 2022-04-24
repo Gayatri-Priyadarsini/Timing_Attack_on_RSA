@@ -2,10 +2,12 @@
 
 import random
 import time
+import numpy as np
 
+import matplotlib.pyplot as plt
 
-DEBUG = True
-# DEBUG = False   
+#DEBUG = True
+DEBUG = False   
 
 
 def rand():
@@ -25,8 +27,10 @@ def binary_exponentiation(a, b):
         return tmp*tmp*a
     else:
         return tmp*tmp
- 
-def premier(q):
+
+# This function is used to get the values of p and q which are supposed to be prime   
+
+def pick_primes(q):
     while True:
         m = rand() % 200
         if (m < 5) or (m == q):
@@ -91,57 +95,70 @@ def decrypt(C, len_d, n, binary_rep_d):
     s = []
     R = []
     data_list = []
+    xpoints=[]
+    ypoints=[]
     s.append(1)
     for i in range(len_d):
         start = time.perf_counter()
         repeat_count = 1000
         hazard = rand()
         for j in range(repeat_count):
-            if hazard < 2147483647/2:
-                    Ri = s[i]
-            else:
-                for _ in range(11):
-                    pass
             if binary_rep_d[len_d-1-i] == 1: 
                 Ri = s[i] * C % n
             else:
                 Ri = s[i]
-
+        #Recording the time taken by particular iteration i.e, or bit
         end = time.perf_counter()
 
         R.append(Ri)
 
 
         tm = (end - start) * 1000000000 // repeat_count  
-        print("time for iteration %d: %d nsec" % (i, tm))
+        print("Time for iteration %d: %d nsec" % (i, tm))
 
         s.append((Ri * Ri) % n)
         data_list.append( (tm, i) )
+        xpoints.append(i)
+        ypoints.append(tm)
+    
+    
+    print()
+    print("Iterations:",xpoints)
+    
+    print("Time taken by each iteration :",ypoints)
+    print()
+
+    plt.plot(xpoints,ypoints,'-ok')
+    plt.xticks(np.arange(0,len_d,1),labels=np.arange(0,len_d,1))
+    plt.show()
+    print()
 
     data_list.sort(key = lambda x: x[0])
 
-    ecart = 0
-    ecart_bis = 0
+    ## To choose which time duration has to be labelled 1 and which need to be labelled 0.
+
+    gap = 0
+    gap_index = 0
     j = 0
     for d in data_list:
-        if (j >= (len_d/3)-1 and j <= len_d-(len_d/3) and j+1 < len(data_list) and (data_list[j+1][0] - d[0]) > ecart):
-            ecart = data_list[j+1][0] - d[0]
-            ind_ecart = j
-        elif j+1 < len(data_list) and (data_list[j+1][0] - d[0]) > ecart:
-            ecart_bis = data_list[j+1][0] - d[0]
-            ind_ecart_bis = j
+        if (j >= (len_d/3)-1 and j <= len_d-(len_d/3) and j+1 < len(data_list) and (data_list[j+1][0] - d[0]) > gap):
+            gap = data_list[j+1][0] - d[0]
+            ind_gap = j
+        elif j+1 < len(data_list) and (data_list[j+1][0] - d[0]) > gap:
+            gap_index = data_list[j+1][0] - d[0]
+            gap_index = j
         j += 1
-    if ecart == 0:
-        ecart = ecart_bis
-        ind_ecart = ind_ecart_bis
+    if gap == 0:
+       gap = gap_index
+       ind_gap = gap_index
     key = [0 for i in range(100)]  
-    for j in range(ind_ecart+1):
+    for j in range(ind_gap+1):
         d = data_list[j]
         key[d[1]] = 0
         if d[1] == 0:
             key[d[1]] = 1
             calc[d[1]] += 1
-    for i in range(ind_ecart+1, len(data_list)):
+    for i in range(ind_gap+1, len(data_list)):
         d = data_list[i]
         key[d[1]] = 1
         calc[d[1]] += 1
@@ -172,12 +189,9 @@ def convert_to_binary(d):
     return (j, binary_digits)
 
 def main():
-    if DEBUG:
-        p = 193
-        q = 13
-    else:
-        p = premier(0)
-        q = premier(p)
+    
+    p = pick_primes(0)
+    q = pick_primes(p)
     print("\nPrime numbers:\np=%d\tq=%d" % (p, q))
 
     n = p*q
@@ -186,8 +200,10 @@ def main():
 
     while True:
         e = int(input("Enter e: "))
-        if check(phi, e):
-            break
+        if not check(phi, e):
+            print("e and phi are not co-prime, try again")
+        else:
+          break
 
     d = 1
     while ((d*e) % phi) != 1:
