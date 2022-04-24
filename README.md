@@ -9,7 +9,7 @@ large prime numbers. The decryption key and encryption key are
 (d,n) and (e,n) respectively.
 
 
-𝑀𝑒𝑠𝑠𝑎𝑔𝑒 = 𝐶𝑖𝑝ℎ𝑒𝑟^𝑑 (mod 𝑁 )
+![equation](𝑀𝑒𝑠𝑠𝑎𝑔𝑒 = 𝐶𝑖𝑝ℎ𝑒𝑟^𝑑 (mod 𝑁 ))
 
 
 It is also important to note that If we want to run a process
