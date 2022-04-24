@@ -18,3 +18,4 @@ chip. If we have more amount of electricity in the chip and wires,
 the device can emit more electromagnetic waves. It simply shows us
 that attacks can be increased if we have speed chips in the devices.
 
+Colab notebook : https://colab.research.google.com/drive/1uKvk5eeNSsRGsg_ygBypUuyb1WYGNVhk?usp=sharing
